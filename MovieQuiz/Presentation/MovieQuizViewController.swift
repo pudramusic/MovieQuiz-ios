@@ -134,26 +134,15 @@ final class MovieQuizViewController: UIViewController {
         imageView.layer.cornerRadius = 20
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            self.showNextQuestionResult()
+            self.showNextQuestionOrResult()
         }
     }
     
-    private func showNextQuestionResult() {
-        if currentQuestionIndex == questions.count - 1 {
-            
-        } else {
-            currentQuestionIndex += 1
-            
-            let nextQuestion = questions[currentQuestionIndex]
-            let viewModel = convert(model: nextQuestion)
-            
-            show(quiz: viewModel)
-        }
-    }
+
     private func show(quiz result: QuizResultViewModel) {
         
-        let alert = UIAlertController(title: "Этот раунд окончен!",
-                                      message: "Ваш результат:",
+        let alert = UIAlertController(title: result.title,
+                                      message: result.text,
                                       preferredStyle: .alert)
         
         let action = UIAlertAction(title: result.buttonText,
