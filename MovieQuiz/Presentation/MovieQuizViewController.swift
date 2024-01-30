@@ -9,21 +9,27 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     @IBOutlet private var counterLabel: UILabel!
     @IBOutlet private var textLabel: UILabel!
     @IBOutlet private var questionTitleLabel: UILabel!
-    
     @IBOutlet private var yesButton: UIButton!
     @IBOutlet private var noButton: UIButton!
-    
     @IBOutlet private var questionLabel: UILabel!
     
     // MARK - Properties
     
+    // счетчик вопросов
     private var currentQuestionIndex = 0
+    // счетчик правильных ответов
     private var correctAnswers = 0
+    // всего вопросов
     private let questionsAmount: Int = 10
+    // ссылка на делегат фабрики вопросов
     private let questionFactory: QuestionFactoryProtocol = QuestionFactory()
+    
     private var currentQuestion: QuizQuestion?
     // создаем свойство класса который реализует делегат
     private var alertPresenter: AlertPresenter?
+    
+    // создаем сервис (свойство) по статистике класса StatisticServiceImplementation
+    private var statisticService: StatisticService = StaticticServiceImplementation()
     
     // MARK - Override
     
@@ -40,8 +46,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         
         super.viewDidLoad()
         
+        // создаем Алерт презентер
         alertPresenter = AlertPresenter(delegate: self)
+        // устанавливаем связь презентора с делегатом
         alertPresenter?.delegate = self
+
     }
     
     // MARK - QuestionFactoryDelegate
@@ -57,25 +66,38 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
             self?.show(quiz: viewModel)
         }
     }
+ 
+    // MARK - AlertPresenterDelegate
+    
+    func showAlert(alert: UIAlertController) {
+        self.present(alert, animated: true)
+    }
+    
     
     // MARK - Action
     
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
+        // отключение кнопки для избежания случайногонажатия кнопки до того как появится вопрос
+        yesButton.isEnabled = false
+        
         guard let currentQuestion = currentQuestion else {
             return
         }
-        let giveAnswer = true
-        
-        showAnswerResult(isCorrect: giveAnswer == currentQuestion.correctAnswer)
+        // включение кнопки после появления вопроса
+        yesButton.isEnabled = true
+        showAnswerResult(isCorrect: currentQuestion.correctAnswer)
     }
     
     @IBAction private func noButtonClicked(_ sender: UIButton) {
+        // отключение кнопки для избежания случайногонажатия кнопки до того как появится вопрос
+        noButton.isEnabled = false
+        
         guard let currentQuestion = currentQuestion else {
             return
         }
-        let giveAnswer = false
-        
-        showAnswerResult(isCorrect: giveAnswer == currentQuestion.correctAnswer)
+        // включение кнопки после появления вопроса
+        noButton.isEnabled = true
+        showAnswerResult(isCorrect: !currentQuestion.correctAnswer)
     }
     
     // MARK - Private
@@ -111,16 +133,16 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         }
     }
 
-    func showAlert(alert: UIAlertController) {
-        self.present(alert, animated: true)
-    }
-    
+
     private func show(quiz result: QuizResultViewModel) {
-        let alertModel  = AlertModel(title: result.title,
-                                     text: result.text,
-                                     buttonText: result.buttonText, buttonAction: {[ weak self ] in
-            guard let self = self else {
-                return}
+        let alertModel  = AlertModel(
+            title: result.title,
+            text: result.text,
+            buttonText: result.buttonText,
+            buttonAction: {[ weak self ] in
+                guard let self = self else {
+                    return
+                }
                 self.currentQuestionIndex = 0
                 self.correctAnswers = 0
                 self.questionFactory.requestNextQuestion()
@@ -130,9 +152,19 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     
     private func showNextQuestionOrResult() {
         if currentQuestionIndex == questionsAmount - 1 {
+            //
+            statisticService.store(correct: correctAnswers, total: questionsAmount)
             
-            let text = correctAnswers == questionsAmount ? "Поздравляем, вы ответили на 10 ил 10!" : "Вы ответили на \(correctAnswers) из 10, попробуйте ещё раз!"
-            let viewModel = QuizResultViewModel(title: "Раунд окончен!",
+            // предыдущий код
+            //let text = correctAnswers == questionsAmount ? "Поздравляем, вы ответили на 10 из 10!" : "Вы ответили на \(correctAnswers) из 10, попробуйте ещё раз!"
+            
+            let text = "Ваш результат: \(correctAnswers)/\(questionsAmount)" + "\n" +
+                       "Количество сыгранных квизов: \(statisticService.gameCount)" + "\n" +
+                       "Рекорд: \(statisticService.bestGame.correct)/\(statisticService.bestGame.total) (\(statisticService.bestGame.date.dateTimeString))" + "\n" +
+                       "Средняя точность: \(String(format: "%.2f", statisticService.totalAccuracy))%"
+            
+            
+            let viewModel = QuizResultViewModel(title: "Этот раунд окончен!",
                                                 text: text,
                                                 buttonText: "Сыграть ещё раз")
            show(quiz: viewModel)
