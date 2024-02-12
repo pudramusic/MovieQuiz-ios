@@ -6,3 +6,10 @@
 //
 
 import Foundation
+
+struct NetworkError {
+    let title: String
+    let text: String
+    let buttonText: String
+    let buttonAction: () -> Void
+}

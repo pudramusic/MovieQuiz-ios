@@ -3,7 +3,7 @@ import UIKit
 //подписываем класс виью контроллера под протокол делегата Алерт преззентера, тем самым показываем что вьконтроллер может являться делегатом Алерт презентора
 final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, AlertPresenterDelegate {
  
-    // MARK - Lifecycle
+    // MARK: - Lifecycle
     
     @IBOutlet private var imageView: UIImageView!
     @IBOutlet private var counterLabel: UILabel!
@@ -12,26 +12,19 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     @IBOutlet private var yesButton: UIButton!
     @IBOutlet private var noButton: UIButton!
     @IBOutlet private var questionLabel: UILabel!
+    @IBOutlet private var activityIndicator: UIActivityIndicatorView!
     
-    // MARK - Properties
+    // MARK: - Properties
     
-    // счетчик вопросов
-    private var currentQuestionIndex = 0
-    // счетчик правильных ответов
-    private var correctAnswers = 0
-    // всего вопросов
-    private let questionsAmount: Int = 10
-    // ссылка на делегат фабрики вопросов
-    private let questionFactory: QuestionFactoryProtocol = QuestionFactory()
-    
+    private var currentQuestionIndex = 0 // счетчик вопросов
+    private var correctAnswers = 0 // счетчик правильных ответов
+    private let questionsAmount: Int = 10  // всего вопросов
+    private var questionFactory: QuestionFactoryProtocol? // ссылка на делегат фабрики вопросов
     private var currentQuestion: QuizQuestion?
-    // создаем свойство класса который реализует делегат
-    private var alertPresenter: AlertPresenter?
+    private var alertPresenter: AlertPresenter? // создаем свойство класса который реализует делегат
+    private var statisticService: StatisticService = StaticticServiceImplementation()   // создаем сервис (свойство) по статистике класса StatisticServiceImplementation
     
-    // создаем сервис (свойство) по статистике класса StatisticServiceImplementation
-    private var statisticService: StatisticService = StaticticServiceImplementation()
-    
-    // MARK - Override
+    // MARK: - Override
     
     override func viewDidLoad() {
         
@@ -41,21 +34,36 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         imageView.layer.borderColor = UIColor.ypBlack.cgColor
         imageView.layer.cornerRadius = 20
 
-        questionFactory.delegate = self
-        questionFactory.requestNextQuestion()
+        questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
+        
+        questionFactory?.delegate = self
+        questionFactory?.requestNextQuestion()
+        
+        alertPresenter = AlertPresenter(delegate: self)  // создаем Алерт презентер
+        alertPresenter?.delegate = self  // устанавливаем связь презентора с делегатом
+        
+        statisticService = StaticticServiceImplementation()
+        
+        showLoadingIndicator()
+        questionFactory?.loadData()
         
         super.viewDidLoad()
         
-        // создаем Алерт презентер
-        alertPresenter = AlertPresenter(delegate: self)
-        // устанавливаем связь презентора с делегатом
-        alertPresenter?.delegate = self
 
     }
     
-    // MARK - QuestionFactoryDelegate
+    // MARK: - QuestionFactoryDelegate
     
-    func didReceiveNextQuestion(question: QuizQuestion?) {
+    func didLoadDataFromServer() { // метод успешной загрузки данных
+        activityIndicator.isHidden = true // для начала скрываем индикатор загрузки
+        questionFactory?.requestNextQuestion() // делаем запрос к фабрике вопросов для загрузки следующего вопроса с сервера.
+    }
+
+    func didFailToLoadData(with error: Error) {  // метод загрузки ошибки и показ ошибки на экране
+        showNetworkError(message: error.localizedDescription) // берем в качестве сообщения описание ошибки
+    }
+   
+    func didReceiveNextQuestion(question: QuizQuestion?) {  // метод получения нового вопроса и отображения его на экране. Вопроса может не быть и тогда метод ничего не делает
         guard let question = question else {
             return
         }
@@ -67,48 +75,50 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         }
     }
  
-    // MARK - AlertPresenterDelegate
+    // MARK: - AlertPresenterDelegate
     
     func showAlert(alert: UIAlertController) {
         self.present(alert, animated: true)
     }
     
     
-    // MARK - Action
+    // MARK: - Action
     
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
-        // отключение кнопки для избежания случайногонажатия кнопки до того как появится вопрос
-        yesButton.isEnabled = false
+        yesButton.isEnabled = false // отключение кнопки для избежания случайногонажатия кнопки до того как появится вопрос
         
         guard let currentQuestion = currentQuestion else {
             return
         }
-        // включение кнопки после появления вопроса
-        yesButton.isEnabled = true
+
+        yesButton.isEnabled = true  // включение кнопки после появления вопроса
         showAnswerResult(isCorrect: currentQuestion.correctAnswer)
     }
     
     @IBAction private func noButtonClicked(_ sender: UIButton) {
-        // отключение кнопки для избежания случайногонажатия кнопки до того как появится вопрос
-        noButton.isEnabled = false
+        noButton.isEnabled = false  // отключение кнопки для избежания случайногонажатия кнопки до того как появится вопрос
         
         guard let currentQuestion = currentQuestion else {
             return
         }
-        // включение кнопки после появления вопроса
-        noButton.isEnabled = true
+       
+        noButton.isEnabled = true  // включение кнопки после появления вопроса
         showAnswerResult(isCorrect: !currentQuestion.correctAnswer)
     }
     
-    // MARK - Private
+    // MARK: - Private
     
-    private func convert(model: QuizQuestion) -> QuizStepViewModel {
-        let questionStep = QuizStepViewModel(
-            image: UIImage(named: model.image) ?? UIImage(),
+    private func showLoadingIndicator() { // добавили функцию, которая будет показывать индикатор загрузки
+        activityIndicator.isHidden = false // указываем что индикатор загрузки не скрыт
+        activityIndicator.startAnimating() // включаем анимацию
+    }
+    
+    private func convert(model: QuizQuestion) -> QuizStepViewModel { // принимаем и конвертируем вопрос квиза в квиз вью модель
+        return QuizStepViewModel( // создаем функцию с тремя параметрами
+            image: UIImage(data: model.image) ?? UIImage(), //
             question: model.text,
             questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)"
         )
-        return questionStep
     }
     
     private func show(quiz step: QuizStepViewModel) {
@@ -133,30 +143,39 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         }
     }
 
+    private func showNetworkError(message: String) {  // добавляем алерту которая покажет ошибки
+        activityIndicator.isHidden = true // скрываем индикатор
+        let model = AlertModel(title: "Что-то пошло не так(",
+                               text: message,
+                               buttonText: "Попробовать ещё раз") { [ weak self ] in
+                                  guard let self = self else { return }
+                                  self.currentQuestionIndex = 0
+                                  self.correctAnswers = 0
+                                  self.questionFactory?.requestNextQuestion()
+        }
+        alertPresenter?.showAlert(alertModel: model)
+    }
 
     private func show(quiz result: QuizResultViewModel) {
-        let alertModel  = AlertModel(
-            title: result.title,
-            text: result.text,
-            buttonText: result.buttonText,
-            buttonAction: {[ weak self ] in
-                guard let self = self else {
-                    return
-                }
-                self.currentQuestionIndex = 0
-                self.correctAnswers = 0
-                self.questionFactory.requestNextQuestion()
-                })
+        activityIndicator.isHidden = true // скрываем индикатор
+        let alertModel  = AlertModel(title: result.title,
+                                     text: result.text,
+                                     buttonText: result.buttonText,
+                                     buttonAction: {[ weak self ] in
+                                     guard let self = self else {
+                                     return
+                                     }
+                                     self.currentQuestionIndex = 0
+                                     self.correctAnswers = 0
+                                     self.questionFactory?.requestNextQuestion()
+        })
+
         alertPresenter?.showAlert(alertModel: alertModel)
     }
     
     private func showNextQuestionOrResult() {
         if currentQuestionIndex == questionsAmount - 1 {
-            //
             statisticService.store(correct: correctAnswers, total: questionsAmount)
-            
-            // предыдущий код
-            //let text = correctAnswers == questionsAmount ? "Поздравляем, вы ответили на 10 из 10!" : "Вы ответили на \(correctAnswers) из 10, попробуйте ещё раз!"
             
             let text = "Ваш результат: \(correctAnswers)/\(questionsAmount)" + "\n" +
                        "Количество сыгранных квизов: \(statisticService.gameCount)" + "\n" +
@@ -172,7 +191,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         } else {
             currentQuestionIndex += 1
 
-            self.questionFactory.requestNextQuestion()
+            self.questionFactory?.requestNextQuestion()
         }
     }
 }
