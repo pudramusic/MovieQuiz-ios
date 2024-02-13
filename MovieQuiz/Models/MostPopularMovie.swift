@@ -23,8 +23,8 @@ struct MostPopularMovies: Codable {
 }
 
 struct MostPopularMovie: Codable {
-    // если имена в JSON не совпадают с именами полей в структуре, то надо указать соответствие между полями в структуре и JSON
-private enum CodingKeys: String, CodingKey {
+    
+private enum CodingKeys: String, CodingKey { // если имена в JSON не совпадают с именами полей в структуре, то надо указать соответствие между полями в структуре и JSON
         case title = "fullTitle"
         case rating = "imDbRating"
         case imageURL = "image"

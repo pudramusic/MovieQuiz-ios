@@ -11,7 +11,7 @@
 import UIKit
 
 protocol MoviesLoading { // создаем протокол для загрузчика фильмов
-    func loadMovies(handler: @escaping (Result<MostPopularMovie, Error>) -> Void)
+    func loadMovies(handler: @escaping (Result<MostPopularMovies, Error>) -> Void)
         
 }
 
@@ -30,12 +30,12 @@ struct MoviesLoader: MoviesLoading { // создаем загрузчик кот
         return url
     }
    
-    func loadMovies(handler: @escaping (Result<MostPopularMovie, Error>) -> Void) {  // создаем загрузчик который будет реализовывать протокол
+    func loadMovies(handler: @escaping (Result<MostPopularMovies, Error>) -> Void) {  // создаем загрузчик который будет реализовывать протокол
         networkClient.fetch(url: mostPopularMoviesURL) { result in // вызываем метод networkClient и передаем ему ссылку на список фильмов
             switch result { // перебираем полученную ссылку
             case .success(let data):
                 do { // и в случае успеха декодируем данные из ссылки в объект MostPopularMovies
-                    let mostPopularMovies = try JSONDecoder().decode(MostPopularMovie.self, from: data)
+                    let mostPopularMovies = try JSONDecoder().decode(MostPopularMovies.self, from: data)
                     handler(.success(mostPopularMovies)) // полученые данные передаем в замыкание
                 } catch { // в случае не успеха ловим ошибку и с помощью замыкания handler передаем ему ошибку
                     handler(.failure(error))

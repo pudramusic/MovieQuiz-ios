@@ -8,12 +8,9 @@
 import Foundation
 
 struct GameRecord: Codable {
-    // количество  правильных ответов
-    let correct: Int
-    // количество вопросов квиза
-    let total: Int
-    // дата завершения раунда
-    let date: Date
+    let correct: Int // количество  правильных ответов
+    let total: Int   // количество вопросов квиза
+    let date: Date   // дата завершения раунда
     
     init(correct: Int, total: Int, date: Date) {
         self.correct = correct
@@ -21,8 +18,7 @@ struct GameRecord: Codable {
         self.date = date
     }
     
-    // метод сравнения рекордов  исходя из количества правильных ответов
-    func  isBetterThan(_ another: GameRecord) -> Bool {
+    func  isBetterThan(_ another: GameRecord) -> Bool { // метод сравнения рекордов  исходя из количества правильных ответов
         correct > another.correct
     }
 }

@@ -10,12 +10,13 @@ import UIKit
 class QuestionFactory: QuestionFactoryProtocol { //  определяем класс и подписываем на него протокол
     private let moviesLoader: MoviesLoader // свойство которое реализует протокол MoviesLoader
     weak var delegate: QuestionFactoryDelegate? // свойство которое реализует протокол QuestionFactoryDelegate
-    private var movies: [MostPopularMovie] = []
     
     init(moviesLoader: MoviesLoader, delegate: QuestionFactoryDelegate?) {
         self.moviesLoader = moviesLoader
         self.delegate = delegate
     }
+    
+    private var movies: [MostPopularMovie] = []
     
     func loadData() { // метод инициализации загрузки данных (его же добавляем в QuestionFactoryProtocol). Загружаем в него данные о фильмах
         moviesLoader.loadMovies { [ weak self ] result in // здесь мы используем структуру movieLoader для вызова ее же метода loadMovies который загружает данные о фильмаз
@@ -53,7 +54,7 @@ class QuestionFactory: QuestionFactoryProtocol { //  определяем кла
             
             DispatchQueue.main.async { [ weak self ] in // теперь когда обработка данных завершена, необходимо вернуться в главный поток
                 guard let self = self else { return }
-                self.delegate?.didReceiveNextQuestion(question: question) // вызываем делегат и передаем через него готовый вопрос
+                self.delegate?.didReceiveNextQuestion(question: question) // вызываем делегат, сообщаем ему что следующий вопрос получен и передаем его
             }
         }
     }

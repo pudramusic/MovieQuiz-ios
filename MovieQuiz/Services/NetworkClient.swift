@@ -8,36 +8,28 @@
 import Foundation
 
 struct NetworkClient {
-    // создаем перечисление возможных ошибок
-    private enum NetworkError: Error {
+    private enum NetworkError: Error {   // создаем перечисление возможных ошибок
         case codeError
     }
     
-    // фунция загрузки урл и обработки ошибок
-    func fetch(url: URL, handler: @escaping (Result<Data, Error>) -> Void) {
-        // создаем запрос
-        let request = URLRequest(url: url)
-        // проверяем на ошибки и обрабатываем их
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            // делаем проверку пришла ли ошибка
-            if let error = error {
-                // обрабатываем и возвращаем результат
-                handler(.failure(error))
+    func fetch(url: URL, handler: @escaping (Result<Data, Error>) -> Void) { // фунция загрузки URL и обработки ошибок
+        let request = URLRequest(url: url)  // создаем запрос
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in  // проверяем на ошибки и обрабатываем их
+            if let error = error {  // делаем проверку пришла ли ошибка
+                handler(.failure(error)) // обрабатываем и возвращаем результат
                 return
             }
-            // проверяем пришел ли успешный код ответа
-            if let response = response as? HTTPURLResponse,
+            
+            if let response = response as? HTTPURLResponse, // проверяем пришел ли код ответа
                response.statusCode < 200 || response.statusCode >= 300 {
-                // обрабатываем и возвращаем результат
-                handler(.failure(NetworkError.codeError))
+                handler(.failure(NetworkError.codeError)) // обрабатываем и возвращаем результат
                 return
             }
-            // если ошибок нет, то обрабатываем ответ
-            guard let data = data else { return }
-            // обрабатываем и возвращаем результат
-            handler(.success(data))
+
+            guard let data = data else { return } // если ошибок нет, то обрабатываем ответ
+            handler(.success(data)) // обрабатываем и возвращаем результат
         }
-        // все ошибки обработаны, получен ответ, теперь возобновляем работу приложения
-        task.resume()
+
+        task.resume()  // все ошибки обработаны, получен ответ, теперь возобновляем работу приложения
     }
 }
