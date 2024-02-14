@@ -55,15 +55,17 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     // MARK: - QuestionFactoryDelegate
     
     func didLoadDataFromServer() { // метод успешной загрузки данных
-        activityIndicator.isHidden = true // для начала скрываем индикатор загрузки
+        hideLoadingIndicator() // вызываем функцию скрытия индикатор загрузки
         questionFactory?.requestNextQuestion() // делаем запрос к фабрике вопросов для загрузки следующего вопроса с сервера.
     }
 
     func didFailToLoadData(with error: Error) {  // метод загрузки ошибки и показ ошибки на экране
+        hideLoadingIndicator() // вызываем функцию скрытия индикатор загрузки
         showNetworkError(message: error.localizedDescription) // берем в качестве сообщения описание ошибки
     }
    
     func didReceiveNextQuestion(question: QuizQuestion?) {  // метод получения нового вопроса и отображения его на экране. Вопроса может не быть и тогда метод ничего не делает
+        // showLoadingIndicator()
         guard let question = question else {
             return
         }
@@ -78,6 +80,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     // MARK: - AlertPresenterDelegate
     
     func showAlert(alert: UIAlertController) {
+        hideLoadingIndicator() // скрываем индикатор перед показом алерты
         self.present(alert, animated: true)
     }
     
@@ -86,6 +89,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     private func showLoadingIndicator() { // добавили функцию, которая будет показывать индикатор загрузки
         activityIndicator.isHidden = false // указываем что индикатор загрузки не скрыт
         activityIndicator.startAnimating() // включаем анимацию
+    }
+    
+    private func hideLoadingIndicator() { // добавляем функцию которая будет скрывать индикатор
+        activityIndicator.isHidden = true // указываем что индикатор загрузки скрыт
+        activityIndicator.stopAnimating() // выключаем анимацию
     }
     
     private func convert(model: QuizQuestion) -> QuizStepViewModel { // принимаем и конвертируем вопрос квиза в квиз вью модель
@@ -119,7 +127,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     }
 
     private func showNetworkError(message: String) {  // добавляем алерту которая покажет ошибки
-        activityIndicator.isHidden = true // скрываем индикатор
+        // hideLoadingIndicator() // скрываем индикатор перед показом алерты с ошибкой
         let model = AlertModel(title: "Что-то пошло не так(",
                                text: message,
                                buttonText: "Попробовать ещё раз") { [ weak self ] in
@@ -132,7 +140,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     }
 
     private func show(quiz result: QuizResultViewModel) {
-        activityIndicator.isHidden = true // скрываем индикатор
+        // hideLoadingIndicator() // скрываем индикатор
         let alertModel  = AlertModel(title: result.title,
                                      text: result.text,
                                      buttonText: result.buttonText,
@@ -166,9 +174,10 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         } else {
             currentQuestionIndex += 1
 
-            self.questionFactory?.requestNextQuestion()
+            questionFactory?.requestNextQuestion()
         }
     }
+    
     
     // MARK: - Action
     
