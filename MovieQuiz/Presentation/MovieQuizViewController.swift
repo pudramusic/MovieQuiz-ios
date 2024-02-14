@@ -81,31 +81,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         self.present(alert, animated: true)
     }
     
-    
-    // MARK: - Action
-    
-    @IBAction private func yesButtonClicked(_ sender: UIButton) {
-        yesButton.isEnabled = false // отключение кнопки для избежания случайногонажатия кнопки до того как появится вопрос
-        
-        guard let currentQuestion = currentQuestion else {
-            return
-        }
-
-        yesButton.isEnabled = true  // включение кнопки после появления вопроса
-        showAnswerResult(isCorrect: currentQuestion.correctAnswer)
-    }
-    
-    @IBAction private func noButtonClicked(_ sender: UIButton) {
-        noButton.isEnabled = false  // отключение кнопки для избежания случайногонажатия кнопки до того как появится вопрос
-        
-        guard let currentQuestion = currentQuestion else {
-            return
-        }
-       
-        noButton.isEnabled = true  // включение кнопки после появления вопроса
-        showAnswerResult(isCorrect: !currentQuestion.correctAnswer)
-    }
-    
     // MARK: - Private
     
     private func showLoadingIndicator() { // добавили функцию, которая будет показывать индикатор загрузки
@@ -151,7 +126,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
                                   guard let self = self else { return }
                                   self.currentQuestionIndex = 0
                                   self.correctAnswers = 0
-                                  self.questionFactory?.requestNextQuestion()
+                                  self.questionFactory?.loadData()
         }
         alertPresenter?.showAlert(alertModel: model)
     }
@@ -193,6 +168,30 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
 
             self.questionFactory?.requestNextQuestion()
         }
+    }
+    
+    // MARK: - Action
+    
+    @IBAction private func yesButtonClicked(_ sender: UIButton) {
+        yesButton.isEnabled = false // отключение кнопки для избежания случайногонажатия кнопки до того как появится вопрос
+        
+        guard let currentQuestion = currentQuestion else {
+            return
+        }
+
+        yesButton.isEnabled = true  // включение кнопки после появления вопроса
+        showAnswerResult(isCorrect: currentQuestion.correctAnswer)
+    }
+    
+    @IBAction private func noButtonClicked(_ sender: UIButton) {
+        noButton.isEnabled = false  // отключение кнопки для избежания случайногонажатия кнопки до того как появится вопрос
+        
+        guard let currentQuestion = currentQuestion else {
+            return
+        }
+       
+        noButton.isEnabled = true  // включение кнопки после появления вопроса
+        showAnswerResult(isCorrect: !currentQuestion.correctAnswer)
     }
 }
 

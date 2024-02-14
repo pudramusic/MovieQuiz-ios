@@ -18,7 +18,7 @@ class QuestionFactory: QuestionFactoryProtocol { //  определяем кла
     
     private var movies: [MostPopularMovie] = []
     
-    func loadData() { // метод инициализации загрузки данных (его же добавляем в QuestionFactoryProtocol). Загружаем в него данные о фильмах
+    func loadData() { // метод инициализации загрузки данных (его же добавляем в QuestionFactoryProtocol). Загружаем в него данные о фильмах)
         moviesLoader.loadMovies { [ weak self ] result in // здесь мы используем структуру movieLoader для вызова ее же метода loadMovies который загружает данные о фильмаз
             DispatchQueue.main.async { // переносим сетевой запрос в гравный поток
                 guard let self = self else { return } // проверяем есть ли ссылка
