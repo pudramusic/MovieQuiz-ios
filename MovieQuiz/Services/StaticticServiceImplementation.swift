@@ -8,16 +8,13 @@
 import Foundation
 import UIKit
 
-// реализуем протокол StatisticService для хранения данных и статистики
-final class StaticticServiceImplementation: StatisticService {
+final class StaticticServiceImplementation: StatisticService { // реализуем протокол StatisticService для хранения данных и статистики
     
-    
-    // создаем перечисление всех ключей и сущностей котрые придется хранить
-    private enum Keys: String {
+    private enum Keys: String { // создаем перечисление всех ключей и сущностей котрые придется хранить
         case correct, total,  bestGame, gameCount, totalCorrectAnswer, totalAmount
     }
-    // чтобы каждый раз при работе с UserDefaults не обрашаться к standart создадим константу
-    private let userDefaults = UserDefaults.standard
+
+    private let userDefaults = UserDefaults.standard // чтобы каждый раз при работе с UserDefaults не обращаться к standart создадим константу
     
     var totalAccuracy: Double {
         get {
@@ -104,9 +101,7 @@ final class StaticticServiceImplementation: StatisticService {
         }
     }
     
-    
-    //  метод для сохранения текущего результата игры с проверкой на то что новый результат лучше
-    func store(correct count: Int, total amount: Int) {
+    func store(correct count: Int, total amount: Int) { //  метод для сохранения текущего результата игры с проверкой на то что новый результат лучше
         let currentRecord = GameRecord(correct: count, total: amount, date: Date())
         if currentRecord.isBetterThan(bestGame) {
             bestGame = currentRecord
@@ -116,9 +111,5 @@ final class StaticticServiceImplementation: StatisticService {
         totalCorrectAnswer = bestGame.correct + count
         totalAmount = bestGame.total + amount
         totalAccuracy = (Double(totalCorrectAnswer) / Double(totalAmount)) * 100
-        
-        // для округления точности используем конструкцию. Перенести в алерту
-        //let formattedAccuracy = String(format: "%.2f", totalAccuracy)
-        //let totalAccuracyString = "\(formattedAccuracy)%"
     }
 }
