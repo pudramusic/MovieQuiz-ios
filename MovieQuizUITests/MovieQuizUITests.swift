@@ -74,16 +74,16 @@ final class MovieQuizUITests: XCTestCase {
         
         for _ in 1...10 { // используем цикл для повторяющихся действий, так как игра закончится через 10 нажатий кнопки
             app.buttons["No"].tap()
-            sleep(3)
+            sleep(2)
         }
         
-        let resultAlert = app.alerts["Game results"] // находим на экране алерту
-        let alertTitle = resultAlert.label
-        let alertButton = resultAlert.buttons.firstMatch.label
+        let alert = app.alerts["Game results"] // находим на экране алерту
+//        let alertLabel = alert.label
+        let alertButton = alert.buttons.firstMatch.label
         
-        XCTAssertTrue(resultAlert.exists) // тестируем алерту
-        XCTAssertEqual(alertTitle, "Этот раунд окончен!") // тестируем есть ли текст в шапке алерты
-        XCTAssertEqual(alertButton, "Сыграть еще раз") // тестируем есть ли текст в кнопке алерты
+        XCTAssertTrue(alert.exists) // тестируем алерту
+        XCTAssertEqual(alert.label, "Этот раунд окончен!") // тестируем есть ли текст в шапке алерты
+        XCTAssertTrue(alert.buttons.firstMatch.label == "Сыграть ещё раз") // тестируем есть ли текст в кнопке алерты
     }
     
     // Тест скрытия алерта завершения игры
@@ -95,14 +95,14 @@ final class MovieQuizUITests: XCTestCase {
             sleep(2)
         }
         
-        let resultAlert = app.alerts["Game results"]
-        resultAlert.buttons.firstMatch.tap()
+        let alert = app.alerts["Game results"]
+        alert.buttons.firstMatch.tap()
         
-        sleep(5)
+        sleep(2)
         
         let indexLabel = app.staticTexts["Index"]
         
-        XCTAssertFalse(resultAlert.exists)
+        XCTAssertFalse(alert.exists)
         XCTAssertEqual(indexLabel.label, "1/10")
     }
     

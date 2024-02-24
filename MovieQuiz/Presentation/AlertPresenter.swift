@@ -20,6 +20,9 @@ final class AlertPresenter {
             title: alertModel.title,
             message: alertModel.text,
             preferredStyle: .alert)
+        
+        alert.view.accessibilityIdentifier = "Game results" // так как алерту мы делали не через сториборд, то необходимо в коде идентифицировать её, чтобы протестировать в MovieQuizUITests на наличие
+        
         let action = UIAlertAction(
             title: alertModel.buttonText,
             style: .default) { _ in
