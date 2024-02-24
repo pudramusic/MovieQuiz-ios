@@ -19,7 +19,10 @@ struct MoviesLoader: MoviesLoading { // создаем загрузчик кот
     
     // MARK: - NetworkClient
    
-    private let networkClient = NetworkClient()  // чтобы создавать запросы к API нужен NetworkClient, создаем его как приватную переменную
+    private let networkClient: NetworkRouting // чтобы создавать запросы к API нужен NetworkClient, создаем его как приватную переменную, но теперь NetworkClient это протокол а не его реализация
+    init(networkClient: NetworkRouting = NetworkClient()) {
+        self.networkClient = networkClient
+    }
     
     //MARK: - URL
   

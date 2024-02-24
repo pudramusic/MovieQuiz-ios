@@ -105,6 +105,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     }
     
     private func show(quiz step: QuizStepViewModel) {
+        hideLoadingIndicator()
         imageView.image = step.image
         textLabel.text = step.question
         counterLabel.text = step.questionNumber
@@ -127,7 +128,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     }
 
     private func showNetworkError(message: String) {  // добавляем алерту которая покажет ошибки
-        // hideLoadingIndicator() // скрываем индикатор перед показом алерты с ошибкой
+        hideLoadingIndicator() // скрываем индикатор перед показом алерты с ошибкой
         let model = AlertModel(title: "Что-то пошло не так(",
                                text: message,
                                buttonText: "Попробовать ещё раз") { [ weak self ] in
@@ -140,7 +141,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     }
 
     private func show(quiz result: QuizResultViewModel) {
-        // hideLoadingIndicator() // скрываем индикатор
+        hideLoadingIndicator() // скрываем индикатор
         let alertModel  = AlertModel(title: result.title,
                                      text: result.text,
                                      buttonText: result.buttonText,
@@ -182,6 +183,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     // MARK: - Action
     
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
+        showLoadingIndicator()
         yesButton.isEnabled = false // отключение кнопки для избежания случайногонажатия кнопки до того как появится вопрос
         
         guard let currentQuestion = currentQuestion else {
@@ -193,6 +195,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     }
     
     @IBAction private func noButtonClicked(_ sender: UIButton) {
+        showLoadingIndicator()
         noButton.isEnabled = false  // отключение кнопки для избежания случайногонажатия кнопки до того как появится вопрос
         
         guard let currentQuestion = currentQuestion else {

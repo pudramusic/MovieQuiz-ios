@@ -8,15 +8,16 @@
 import UIKit
 
 class QuestionFactory: QuestionFactoryProtocol { //  определяем класс и подписываем на него протокол
-    private let moviesLoader: MoviesLoader // свойство которое реализует протокол MoviesLoader
+    
     weak var delegate: QuestionFactoryDelegate? // свойство которое реализует протокол QuestionFactoryDelegate
+    
+    private let moviesLoader: MoviesLoader // свойство которое реализует протокол MoviesLoader
+    private var movies: [MostPopularMovie] = []
     
     init(moviesLoader: MoviesLoader, delegate: QuestionFactoryDelegate?) {
         self.moviesLoader = moviesLoader
         self.delegate = delegate
     }
-    
-    private var movies: [MostPopularMovie] = []
     
     func loadData() { // метод инициализации загрузки данных (его же добавляем в QuestionFactoryProtocol). Загружаем в него данные о фильмах)
         moviesLoader.loadMovies { [ weak self ] result in // здесь мы используем структуру movieLoader для вызова ее же метода loadMovies который загружает данные о фильмаз
