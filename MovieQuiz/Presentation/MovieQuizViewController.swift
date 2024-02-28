@@ -2,6 +2,7 @@ import UIKit
 
 //подписываем класс виью контроллера под протокол делегата Алерт преззентера, тем самым показываем что вьконтроллер может являться делегатом Алерт презентора
 final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, AlertPresenterDelegate {
+    
  
     // MARK: - Lifecycle
     
@@ -16,15 +17,12 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     
     // MARK: - Properties
     
-//    private var currentQuestionIndex = 0 // счетчик вопросов
-    private var correctAnswers = 0 // счетчик правильных ответов
-//    private let questionsAmount: Int = 10  // всего вопросов
-    private var questionFactory: QuestionFactoryProtocol? // ссылка на делегат фабрики вопросов
-//    private var currentQuestion: QuizQuestion?
+//    private var correctAnswers = 0 // счетчик правильных ответов
+//    private var questionFactory: QuestionFactoryProtocol? // ссылка на делегат фабрики вопросов
     private var alertPresenter: AlertPresenter? // создаем свойство класса который реализует делегат
     private var presenter = MovieQuizPresenter() // создаем свойство класса
-    private var statisticService: StatisticService = StaticticServiceImplementation() // создаем сервис (свойство) по статистике класса StatisticServiceImplementation
-    
+//    private var statisticService: StatisticService = StaticticServiceImplementation() // создаем сервис (свойство) по статистике класса StatisticServiceImplementation
+ 
     // MARK: - Override
     
     override func viewDidLoad() {
@@ -35,18 +33,18 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         imageView.layer.borderColor = UIColor.ypBlack.cgColor
         imageView.layer.cornerRadius = 20
 
-        questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
+        presenter.questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         
-        questionFactory?.delegate = self
-        questionFactory?.requestNextQuestion()
+        presenter.questionFactory?.delegate = self
+        presenter.questionFactory?.requestNextQuestion()
         
         alertPresenter = AlertPresenter(delegate: self)  // создаем Алерт презентер
         alertPresenter?.delegate = self  // устанавливаем связь презентора с делегатом
         
-        statisticService = StaticticServiceImplementation()
+        presenter.statisticService = StaticticServiceImplementation()
         
         showLoadingIndicator()
-        questionFactory?.loadData()
+        presenter.questionFactory?.loadData()
         
         presenter.viewController = self
         
@@ -58,7 +56,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     
     func didLoadDataFromServer() { // метод успешной загрузки данных
         hideLoadingIndicator() // вызываем функцию скрытия индикатор загрузки
-        questionFactory?.requestNextQuestion() // делаем запрос к фабрике вопросов для загрузки следующего вопроса с сервера.
+        presenter.questionFactory?.requestNextQuestion() // делаем запрос к фабрике вопросов для загрузки следующего вопроса с сервера.
     }
 
     func didFailToLoadData(with error: Error) {  // метод загрузки ошибки и показ ошибки на экране
@@ -66,23 +64,15 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         showNetworkError(message: error.localizedDescription) // берем в качестве сообщения описание ошибки
     }
    
-    func didReceiveNextQuestion(question: QuizQuestion?) {  // метод получения нового вопроса и отображения его на экране. Вопроса может не быть и тогда метод ничего не делает
-        guard let question = question else {
-            return
-        }
-        
-        presenter.currentQuestion = question
-        let viewModel = presenter.convert(model: question)
-        DispatchQueue.main.async { [weak self] in
-            self?.show(quiz: viewModel)
-        }
+    func didReceiveNextQuestion(question: QuizQuestion?) {
+        presenter.didReceiveNextQuestion(question: question)
     }
  
     // MARK: - public
     
     func showAnswerResult(isCorrect: Bool) {
         if isCorrect {
-            correctAnswers += 1
+            presenter.correctAnswers += 1
         }
         
         imageView.layer.masksToBounds = true
@@ -91,7 +81,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         imageView.layer.cornerRadius = 20
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            self.showNextQuestionOrResult()
+            self.presenter.showNextQuestionOrResult()
         }
     }
     
@@ -114,7 +104,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     
     // MARK: - Private
     
-    private func show(quiz step: QuizStepViewModel) { // функция предоставления данных из QuizStepViewModel
+    func show(quiz step: QuizStepViewModel) { // функция предоставления данных из QuizStepViewModel
         hideLoadingIndicator()
         imageView.image = step.image
         textLabel.text = step.question
@@ -128,14 +118,14 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
                                text: message,
                                buttonText: "Попробовать ещё раз") { [ weak self ] in
                                   guard let self = self else { return }
-                                  self.presenter.resetQuestionIndex()
-                                  self.correctAnswers = 0
-                                  self.questionFactory?.loadData()
+                                  presenter.resetQuestionIndex()
+                                  presenter.correctAnswers = 0
+                                  presenter.questionFactory?.loadData()
         }
         alertPresenter?.showAlert(alertModel: model)
     }
 
-    private func show(quiz result: QuizResultViewModel) {
+    func show(quiz result: QuizResultViewModel) {
         hideLoadingIndicator() // скрываем индикатор
         let alertModel  = AlertModel(title: result.title,
                                      text: result.text,
@@ -144,40 +134,21 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
                                      guard let self = self else {
                                      return
                                      }
-                                     self.presenter.resetQuestionIndex()
-                                     self.correctAnswers = 0
-                                     self.questionFactory?.requestNextQuestion()
+                                     presenter.resetQuestionIndex()
+                                     presenter.correctAnswers = 0
+                                     presenter.questionFactory?.requestNextQuestion()
         })
 
         alertPresenter?.showAlert(alertModel: alertModel)
     }
-    
-    private func showNextQuestionOrResult() {
-        if presenter.isLastQuestion() {
-            statisticService.store(correct: correctAnswers, total: presenter.questionsAmount)
-            
-            let text = "Ваш результат: \(correctAnswers)/\(presenter.questionsAmount)" + "\n" +
-                       "Количество сыгранных квизов: \(statisticService.gameCount)" + "\n" +
-                       "Рекорд: \(statisticService.bestGame.correct)/\(statisticService.bestGame.total) (\(statisticService.bestGame.date.dateTimeString))" + "\n" +
-                       "Средняя точность: \(String(format: "%.2f", statisticService.totalAccuracy))%"
-            
-            
-            let viewModel = QuizResultViewModel(title: "Этот раунд окончен!",
-                                                text: text,
-                                                buttonText: "Сыграть ещё раз")
-           show(quiz: viewModel)
-           
-        } else {
-            presenter.switchToNextQuestion()
-
-            questionFactory?.requestNextQuestion()
-        }
-    }
+ 
+//    func showNextQuestionOrResult() {
+//    }
     
     
     // MARK: - Action
     
-    @IBAction private func yesButtonClicked(_ sender: UIButton) {
+    @IBAction private func yesButtonClicked(_ sender: UIButton) { 
         presenter.yesButtonClicked()
 
     }
