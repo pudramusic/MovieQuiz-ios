@@ -29,7 +29,7 @@
 		D930CE612B763086007F2CB3 /* MoviesLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D930CE602B763086007F2CB3 /* MoviesLoader.swift */; };
 		D94D5D522B382B1C00F1BA37 /* YS Display-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D94D5D502B382B1C00F1BA37 /* YS Display-Bold.ttf */; };
 		D94D5D532B382B1C00F1BA37 /* YS Display-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D94D5D512B382B1C00F1BA37 /* YS Display-Medium.ttf */; };
-		D9AB11762B89BA4C00B511E3 /* MovieQuizTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AB11752B89BA4C00B511E3 /* MovieQuizTests.swift */; };
+		D98999412B8F1E690081341A /* MovieQuizPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98999402B8F1E690081341A /* MovieQuizPresenter.swift */; };
 		D9AB117D2B89BABD00B511E3 /* ArrayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AB117C2B89BABD00B511E3 /* ArrayTests.swift */; };
 		D9AB117F2B89BBCF00B511E3 /* MoviesLoaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AB117E2B89BBCF00B511E3 /* MoviesLoaderTests.swift */; };
 		D9AB11872B89C30600B511E3 /* MovieQuizUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AB11862B89C30600B511E3 /* MovieQuizUITests.swift */; };
@@ -81,8 +81,8 @@
 		D930CE602B763086007F2CB3 /* MoviesLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviesLoader.swift; sourceTree = "<group>"; };
 		D94D5D502B382B1C00F1BA37 /* YS Display-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "YS Display-Bold.ttf"; sourceTree = "<group>"; };
 		D94D5D512B382B1C00F1BA37 /* YS Display-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "YS Display-Medium.ttf"; sourceTree = "<group>"; };
+		D98999402B8F1E690081341A /* MovieQuizPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieQuizPresenter.swift; sourceTree = "<group>"; };
 		D9AB11732B89BA4C00B511E3 /* MovieQuizTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MovieQuizTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D9AB11752B89BA4C00B511E3 /* MovieQuizTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieQuizTests.swift; sourceTree = "<group>"; };
 		D9AB117C2B89BABD00B511E3 /* ArrayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayTests.swift; sourceTree = "<group>"; };
 		D9AB117E2B89BBCF00B511E3 /* MoviesLoaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviesLoaderTests.swift; sourceTree = "<group>"; };
 		D9AB11842B89C30500B511E3 /* MovieQuizUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MovieQuizUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -122,6 +122,7 @@
 			isa = PBXGroup;
 			children = (
 				AD1ABAB52831907B00B3E448 /* MovieQuizViewController.swift */,
+				D98999402B8F1E690081341A /* MovieQuizPresenter.swift */,
 				D9F281932B610D150060FA7B /* AlertPresenter.swift */,
 				AD1ABAB72831907B00B3E448 /* Main.storyboard */,
 			);
@@ -223,7 +224,6 @@
 		D9AB11742B89BA4C00B511E3 /* MovieQuizTests */ = {
 			isa = PBXGroup;
 			children = (
-				D9AB11752B89BA4C00B511E3 /* MovieQuizTests.swift */,
 				D9AB117C2B89BABD00B511E3 /* ArrayTests.swift */,
 				D9AB117E2B89BBCF00B511E3 /* MoviesLoaderTests.swift */,
 			);
@@ -372,6 +372,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D98999412B8F1E690081341A /* MovieQuizPresenter.swift in Sources */,
 				D930CE5D2B73D3ED007F2CB3 /* NetworkClient.swift in Sources */,
 				AD5EE5DE284D7887003966EF /* UIColor+Extensions.swift in Sources */,
 				D9F281942B610D150060FA7B /* AlertPresenter.swift in Sources */,
@@ -400,7 +401,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D9AB11762B89BA4C00B511E3 /* MovieQuizTests.swift in Sources */,
 				D9AB117F2B89BBCF00B511E3 /* MoviesLoaderTests.swift in Sources */,
 				D9AB117D2B89BABD00B511E3 /* ArrayTests.swift in Sources */,
 			);
