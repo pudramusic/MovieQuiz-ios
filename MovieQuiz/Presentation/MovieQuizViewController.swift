@@ -1,7 +1,7 @@
 import UIKit
 
 //подписываем класс виью контроллера под протокол делегата Алерт преззентера, тем самым показываем что вьконтроллер может являться делегатом Алерт презентора
-final class MovieQuizViewController: UIViewController, AlertPresenterDelegate {
+final class MovieQuizViewController: UIViewController, AlertPresenterDelegate, MovieQuizViewControllerProtocol {
     
  
     // MARK: - Lifecycle
@@ -50,6 +50,10 @@ final class MovieQuizViewController: UIViewController, AlertPresenterDelegate {
     
     //  MARK: - Private
     
+    func changeStateButtons(isEnable: Bool) { // временное включение и отключение кнопок
+        yesButton.isEnabled = isEnable
+        noButton.isEnabled = isEnable
+    }
     
     func showLoadingIndicator() { // добавили функцию, которая будет показывать индикатор загрузки
         activityIndicator.isHidden = false // указываем что индикатор загрузки не скрыт
@@ -85,11 +89,11 @@ final class MovieQuizViewController: UIViewController, AlertPresenterDelegate {
     }
  
     
-    func highlightImageBorder(isCorrect: Bool) {
+    func highlightImageBorder(isCorrectAnswer: Bool) {
         
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
-        imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
+        imageView.layer.borderColor = isCorrectAnswer ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
         imageView.layer.cornerRadius = 20
     }
     
@@ -110,7 +114,6 @@ final class MovieQuizViewController: UIViewController, AlertPresenterDelegate {
     
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
         presenter.yesButtonClicked()
-
     }
     
     @IBAction private func noButtonClicked(_ sender: UIButton) {

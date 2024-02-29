@@ -8,6 +8,21 @@
 import Foundation
 import UIKit
 
+protocol MovieQuizViewControllerProtocol: AnyObject { // создаем протокол для тестирования Presenter
+    
+    func showAlert(alert: UIAlertController)
+    func show(quiz step: QuizStepViewModel)
+    func show(quiz result: QuizResultViewModel)
+    
+    func highlightImageBorder(isCorrectAnswer: Bool)
+    
+    func showLoadingIndicator()
+    func hideLoadingIndicator()
+    func changeStateButtons(isEnable: Bool)
+    
+    func showNetworkError(message: String)
+}
+
 final class MovieQuizPresenter: QuestionFactoryDelegate {
     
     
@@ -21,13 +36,14 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     var questionFactory: QuestionFactoryProtocol? // ссылка на делегат фабрики вопросов
     var statisticService: StatisticService = StaticticServiceImplementation() // создаем сервис (свойство) по статистике класса StatisticServiceImplementation
     
-    private weak var viewController: MovieQuizViewController?
-    init(viewController: MovieQuizViewController) {
+    private weak var viewController: MovieQuizViewControllerProtocol?
+    init(viewController: MovieQuizViewControllerProtocol?) {
         self.viewController = viewController
         
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         questionFactory?.loadData()
-        viewController.showLoadingIndicator()
+        viewController?.showLoadingIndicator()
+        viewController?.hideLoadingIndicator()
     }
     
    
@@ -54,8 +70,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         DispatchQueue.main.async { [weak self] in
             self?.viewController?.show(quiz: viewModel)
         }
-        viewController?.noButton.isEnabled = true  // включение кнопки сразу после появления вопроса
-        viewController?.yesButton.isEnabled = true
+        viewController?.changeStateButtons(isEnable: true) // включение кнопки сразу после появления вопроса
     }
     
     
@@ -113,7 +128,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
    private func proceedWithAnswer(isCorrect: Bool) {
         didAnswer(isCorrectAnswer: isCorrect)
 
-        viewController?.highlightImageBorder(isCorrect: isCorrect)
+        viewController?.highlightImageBorder(isCorrectAnswer: isCorrect)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             self.proceedToNextQuestionOrResult()
@@ -149,8 +164,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     private func didAnswer(isYes: Bool) { // функция проверки ответа на вопрос (вынесли за пределы yesButton и noButton, чтобы не повторять код)
         
         viewController?.showLoadingIndicator()
-        viewController?.noButton.isEnabled = false  // отключение кнопки для избежания случайногонажатия кнопки до того как появится вопрос
-        viewController?.yesButton.isEnabled = false
+        viewController?.changeStateButtons(isEnable: false)  // отключение кнопки для избежания случайногонажатия кнопки до того как появится вопрос
         
         guard let currentQuestion = currentQuestion else {
             return
