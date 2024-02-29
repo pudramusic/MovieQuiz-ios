@@ -48,7 +48,7 @@ final class MovieQuizUITests: XCTestCase {
         
         XCTAssertNotEqual(firstPosterData, secondPosterData) // проверяем что постеры разные
         XCTAssertEqual(indexLabel.label, "2/10")
-
+        
     }
     
     func testNoButton() {
@@ -64,7 +64,7 @@ final class MovieQuizUITests: XCTestCase {
         let secondPosterData = secondPoster.screenshot().pngRepresentation // так как это не картинка а UI элемент, необходимо сначала сделать скриншот этого элемента и передать как Data
         
         let indexLabel = app.staticTexts["Index"]
-
+        
         XCTAssertNotEqual(firstPosterData, secondPosterData)
         XCTAssertEqual(indexLabel.label, "2/10")
     }
@@ -78,7 +78,7 @@ final class MovieQuizUITests: XCTestCase {
         }
         
         let alert = app.alerts["Game results"] // находим на экране алерту
-//        let alertLabel = alert.label
+        //        let alertLabel = alert.label
         let alertButton = alert.buttons.firstMatch.label
         
         XCTAssertTrue(alert.exists) // тестируем алерту
@@ -107,11 +107,3 @@ final class MovieQuizUITests: XCTestCase {
     }
     
 }
-
-
-//func testExample() throws {
-//    // UI tests must launch the application that they test.
-//    let app = XCUIApplication()
-//    app.launch()
-//    // Use XCTAssert and related functions to verify your tests produce the correct results.
-//}

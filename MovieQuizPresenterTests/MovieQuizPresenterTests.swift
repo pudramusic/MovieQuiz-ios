@@ -29,7 +29,7 @@ final class MovieQuizViewControllerMock: MovieQuizViewControllerProtocol {
     }
     func showNetworkError(message: String) {
     }
-
+    
 }
 
 final class MovieQuizPresenterTests: XCTestCase {
@@ -45,5 +45,5 @@ final class MovieQuizPresenterTests: XCTestCase {
         XCTAssertEqual(viewModel.question, "Question Text")
         XCTAssertEqual(viewModel.questionNumber, "1/10")
     }
-
+    
 }

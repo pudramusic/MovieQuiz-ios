@@ -46,20 +46,20 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         viewController?.hideLoadingIndicator()
     }
     
-   
+    
     // MARK: - QuestionFactoryDelegate
     
     
     func didLoadDataFromServer() { // метод успешной загрузки данных
         viewController?.hideLoadingIndicator() // вызываем функцию скрытия индикатор загрузки
         questionFactory?.requestNextQuestion() // делаем запрос к фабрике вопросов для загрузки следующего вопроса с сервера.
-        }
+    }
     
     func didFailToLoadData(with error: Error) {  // метод загрузки ошибки и показ ошибки на экране
         viewController?.hideLoadingIndicator() // вызываем функцию скрытия индикатор загрузки
         viewController?.showNetworkError(message: error.localizedDescription) // берем в качестве сообщения описание ошибки
-        }
-       
+    }
+    
     func didReceiveNextQuestion(question: QuizQuestion?) {  // метод получения нового вопроса и отображения его на экране. Вопроса может не быть и тогда метод ничего не делает
         guard let question = question else {
             return
@@ -125,17 +125,17 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     // MARK: - Private
     
     
-   private func proceedWithAnswer(isCorrect: Bool) {
+    private func proceedWithAnswer(isCorrect: Bool) {
         didAnswer(isCorrectAnswer: isCorrect)
-
+        
         viewController?.highlightImageBorder(isCorrectAnswer: isCorrect)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             self.proceedToNextQuestionOrResult()
         }
     }
-
-   private func proceedToNextQuestionOrResult() {
+    
+    private func proceedToNextQuestionOrResult() {
         if self.isLastQuestion() {
             statisticService.store(correct: correctAnswers, total: self.questionsAmount)
             
@@ -146,15 +146,15 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
                                                 text: text,
                                                 buttonText: "Сыграть ещё раз")
             viewController?.show(quiz: viewModel)
-           
+            
         } else {
             self.switchToNextQuestion()
-
+            
             questionFactory?.requestNextQuestion()
         }
     }
     
-   private func didAnswer(isCorrectAnswer: Bool) { // метод подсчета правильных ответов
+    private func didAnswer(isCorrectAnswer: Bool) { // метод подсчета правильных ответов
         if isCorrectAnswer {
             correctAnswers += 1
         }
@@ -186,5 +186,5 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     func noButtonClicked() {
         didAnswer(isYes: false)
     }
-
+    
 }

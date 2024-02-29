@@ -12,27 +12,27 @@ import UIKit
 
 protocol MoviesLoading { // создаем протокол для загрузчика фильмов
     func loadMovies(handler: @escaping (Result<MostPopularMovies, Error>) -> Void)
-        
+    
 }
 
 struct MoviesLoader: MoviesLoading { // создаем загрузчик который будет реализовывать протокол
     
     // MARK: - NetworkClient
-   
+    
     private let networkClient: NetworkRouting // чтобы создавать запросы к API нужен NetworkClient, создаем его как приватную переменную, но теперь NetworkClient это протокол а не его реализация
     init(networkClient: NetworkRouting = NetworkClient()) {
         self.networkClient = networkClient
     }
     
     //MARK: - URL
-  
+    
     private var mostPopularMoviesURL: URL {   // так же нам понадобится URL в виде URL метода для получения фильмов
         guard let url = URL(string: "https://tv-api.com/en/API/Top250Movies/k_zcuw1ytf") else { // преобразовываем строку в URL
             preconditionFailure("Unable to construct mostPopularMoviesUrl")
         }
         return url
     }
-   
+    
     func loadMovies(handler: @escaping (Result<MostPopularMovies, Error>) -> Void) {  // создаем загрузчик который будет реализовывать протокол
         networkClient.fetch(url: mostPopularMoviesURL) { result in // вызываем метод networkClient и передаем ему ссылку на список фильмов
             switch result { // перебираем полученную ссылку
@@ -49,6 +49,6 @@ struct MoviesLoader: MoviesLoading { // создаем загрузчик кот
         }
     }
 }
-    
-  
+
+
 

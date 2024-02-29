@@ -3,7 +3,7 @@ import UIKit
 //подписываем класс виью контроллера под протокол делегата Алерт преззентера, тем самым показываем что вьконтроллер может являться делегатом Алерт презентора
 final class MovieQuizViewController: UIViewController, AlertPresenterDelegate, MovieQuizViewControllerProtocol {
     
- 
+    
     // MARK: - Lifecycle
     
     
@@ -22,18 +22,18 @@ final class MovieQuizViewController: UIViewController, AlertPresenterDelegate, M
     
     private var alertPresenter: AlertPresenter? // создаем свойство класса который реализует делегат
     private var presenter: MovieQuizPresenter! // создаем свойство класса
-
+    
     
     // MARK: - Override
     
     
     override func viewDidLoad() {
-
+        
         alertPresenter = AlertPresenter(delegate: self)  // создаем Алерт презентер
         alertPresenter?.delegate = self  // устанавливаем связь презентора с делегатом
-
+        
         super.viewDidLoad()
-
+        
         presenter = MovieQuizPresenter(viewController: self)
         
     }
@@ -64,7 +64,7 @@ final class MovieQuizViewController: UIViewController, AlertPresenterDelegate, M
         activityIndicator.isHidden = true // указываем что индикатор загрузки скрыт
         activityIndicator.stopAnimating() // выключаем анимацию
     }
-
+    
     func show(quiz step: QuizStepViewModel) { // функция предоставления данных из QuizStepViewModel
         hideLoadingIndicator()
         imageView.image = step.image
@@ -79,15 +79,15 @@ final class MovieQuizViewController: UIViewController, AlertPresenterDelegate, M
                                      text: result.text,
                                      buttonText: result.buttonText,
                                      buttonAction: {[ weak self ] in
-                                     guard let self = self else {
-                                     return
-                                     }
-
+            guard let self = self else {
+                return
+            }
+            
         })
         alertPresenter?.showAlert(alertModel: alertModel)
         self.presenter.restartGame()
     }
- 
+    
     
     func highlightImageBorder(isCorrectAnswer: Bool) {
         
@@ -102,7 +102,7 @@ final class MovieQuizViewController: UIViewController, AlertPresenterDelegate, M
         let model = AlertModel(title: "Что-то пошло не так(",
                                text: message,
                                buttonText: "Попробовать ещё раз") { [ weak self ] in
-                                  guard let self = self else { return }
+            guard let self = self else { return }
         }
         alertPresenter?.showAlert(alertModel: model)
         self.presenter.restartGame()
