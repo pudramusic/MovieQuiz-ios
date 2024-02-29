@@ -13,21 +13,21 @@ final class StaticticServiceImplementation: StatisticService { // реализу
     private enum Keys: String { // создаем перечисление всех ключей и сущностей котрые придется хранить
         case correct, total,  bestGame, gameCount, totalCorrectAnswer, totalAmount
     }
-
+    
     private let userDefaults = UserDefaults.standard // чтобы каждый раз при работе с UserDefaults не обращаться к standart создадим константу
     
     var totalAccuracy: Double {
         get {
             guard let data = userDefaults.data(forKey: Keys.total.rawValue),
                   let total = try? JSONDecoder().decode(Double.self, from: data) else {
-            return 0.0
+                return 0.0
             }
             return total
         }
         set {
             guard let data = try? JSONEncoder().encode(newValue)  else {
                 print("Невозможно сохранить результат")
-            return
+                return
             }
             userDefaults.set(data, forKey: Keys.total.rawValue)
         }
@@ -37,14 +37,14 @@ final class StaticticServiceImplementation: StatisticService { // реализу
         get {
             guard let data = userDefaults.data(forKey: Keys.gameCount.rawValue),
                   let count = try? JSONDecoder().decode(Int.self, from: data) else {
-            return 0
+                return 0
             }
             return count
         }
         set {
             guard let data = try? JSONEncoder().encode(newValue) else {
                 print("Невозможно сохранить результат")
-            return
+                return
             }
             userDefaults.set(data, forKey: Keys.gameCount.rawValue)
         }
@@ -54,14 +54,14 @@ final class StaticticServiceImplementation: StatisticService { // реализу
         get {
             guard let data = userDefaults.data(forKey: Keys.bestGame.rawValue),
                   let record = try? JSONDecoder().decode(GameRecord.self, from: data) else {
-            return .init(correct: 0, total: 0, date: Date())
+                return .init(correct: 0, total: 0, date: Date())
             }
             return record
         }
         set {
             guard let data = try? JSONEncoder().encode(newValue) else {
                 print("Невозможно сохранить результат")
-            return
+                return
             }
             userDefaults.set(data, forKey: Keys.bestGame.rawValue)
         }
@@ -71,14 +71,14 @@ final class StaticticServiceImplementation: StatisticService { // реализу
         get {
             guard let data = userDefaults.data(forKey: Keys.totalCorrectAnswer.rawValue),
                   let count = try? JSONDecoder().decode(Int.self, from: data) else {
-            return 0
+                return 0
             }
             return count
         }
         set {
             guard let data = try? JSONEncoder().encode(newValue) else {
                 print("Невозможно сохранить результат")
-            return
+                return
             }
             userDefaults.set(data, forKey: Keys.totalCorrectAnswer.rawValue)
         }
@@ -88,7 +88,7 @@ final class StaticticServiceImplementation: StatisticService { // реализу
         get {
             guard let data = userDefaults.data(forKey: Keys.totalAmount.rawValue),
                   let count = try? JSONDecoder().decode(Int.self, from: data) else {
-            return 0
+                return 0
             }
             return count
         }

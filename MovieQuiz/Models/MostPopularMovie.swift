@@ -24,7 +24,7 @@ struct MostPopularMovies: Codable {
 
 struct MostPopularMovie: Codable {
     
-private enum CodingKeys: String, CodingKey { // если имена в JSON не совпадают с именами полей в структуре, то надо указать соответствие между полями в структуре и JSON
+    private enum CodingKeys: String, CodingKey { // если имена в JSON не совпадают с именами полей в структуре, то надо указать соответствие между полями в структуре и JSON
         case title = "fullTitle"
         case rating = "imDbRating"
         case imageURL = "image"
@@ -33,7 +33,7 @@ private enum CodingKeys: String, CodingKey { // если имена в JSON не
     let title: String
     let rating: String
     let imageURL: URL
-
+    
     // по ссылке мы получаем картинку с неверными размерами, поэтому в конце ссылки https://m.media-amazon.com/images/M/.....V1_Ratio0.6763_AL_.jpg нужно заменить значение на ._VO_UX600_.jpg
     var resizedImageURL: URL {
         let urlString = imageURL.absoluteString // создаем строку из адреса
@@ -44,5 +44,5 @@ private enum CodingKeys: String, CodingKey { // если имена в JSON не
         }
         return newURL // возвращаем новый адрес
     }
-
+    
 }
